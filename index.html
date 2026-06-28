@@ -18,8 +18,8 @@
       --text-muted: #6b7280;
       --primary: #4f46e5;
       --primary-hover: #4338ca;
+      --primary-light: #eef2ff;
       --danger: #ef4444;
-      --danger-hover: #dc2626;
       --border: #e5e7eb;
       --completed: #9ca3af;
       --shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
@@ -38,12 +38,12 @@
 
     .app {
       width: 100%;
-      max-width: 520px;
+      max-width: 720px;
     }
 
     header {
       text-align: center;
-      margin-bottom: 2rem;
+      margin-bottom: 1.5rem;
     }
 
     header h1 {
@@ -58,6 +58,47 @@
       font-size: 0.95rem;
     }
 
+    .view-toggle {
+      display: flex;
+      gap: 0.35rem;
+      margin-bottom: 1rem;
+      background: var(--surface);
+      padding: 0.35rem;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .view-btn {
+      flex: 1;
+      padding: 0.55rem 1rem;
+      background: transparent;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .view-btn:hover {
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    .view-btn.active {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .panel {
+      display: none;
+    }
+
+    .panel.active {
+      display: block;
+    }
+
     .card {
       background: var(--surface);
       border-radius: var(--radius);
@@ -66,13 +107,21 @@
     }
 
     .add-form {
-      display: flex;
-      gap: 0.5rem;
       padding: 1.25rem;
       border-bottom: 1px solid var(--border);
     }
 
-    .add-form input {
+    .add-form-row {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .add-form-row + .add-form-row {
+      margin-top: 0.5rem;
+    }
+
+    .add-form input[type="text"],
+    .add-form input[type="date"] {
       flex: 1;
       padding: 0.65rem 1rem;
       border: 1px solid var(--border);
@@ -80,6 +129,7 @@
       font-size: 0.95rem;
       outline: none;
       transition: border-color 0.15s;
+      font-family: inherit;
     }
 
     .add-form input:focus {
@@ -101,6 +151,13 @@
 
     .add-form button:hover {
       background: var(--primary-hover);
+    }
+
+    .date-label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 0.35rem;
     }
 
     .filters {
@@ -135,7 +192,7 @@
 
     .task-list {
       list-style: none;
-      max-height: 400px;
+      max-height: 420px;
       overflow-y: auto;
     }
 
@@ -169,10 +226,20 @@
       flex-shrink: 0;
     }
 
-    .task-text {
+    .task-body {
       flex: 1;
+      min-width: 0;
+    }
+
+    .task-text {
       font-size: 0.95rem;
       word-break: break-word;
+    }
+
+    .task-date {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 0.15rem;
     }
 
     .delete-btn {
@@ -235,59 +302,313 @@
       color: var(--text-muted);
       background: none;
     }
+
+    /* Calendar */
+    .calendar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .calendar-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+    }
+
+    .calendar-nav {
+      display: flex;
+      gap: 0.35rem;
+    }
+
+    .nav-btn {
+      width: 34px;
+      height: 34px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+
+    .nav-btn:hover {
+      background: var(--bg);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      padding: 0.75rem 1rem 1rem;
+      gap: 4px;
+    }
+
+    .weekday {
+      text-align: center;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      padding: 0.35rem 0;
+    }
+
+    .calendar-day {
+      min-height: 72px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.35rem;
+      cursor: pointer;
+      transition: all 0.15s;
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .calendar-day:hover:not(.empty) {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .calendar-day.empty {
+      border-color: transparent;
+      background: transparent;
+      cursor: default;
+    }
+
+    .calendar-day.today {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .calendar-day.selected {
+      box-shadow: inset 0 0 0 2px var(--primary);
+    }
+
+    .calendar-day.other-month {
+      opacity: 0.45;
+    }
+
+    .day-number {
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-bottom: 0.2rem;
+      flex-shrink: 0;
+    }
+
+    .day-tasks {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      overflow: hidden;
+      flex: 1;
+    }
+
+    .day-task {
+      font-size: 0.65rem;
+      line-height: 1.2;
+      padding: 2px 4px;
+      border-radius: 3px;
+      background: var(--primary);
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .day-task.completed {
+      background: var(--completed);
+      text-decoration: line-through;
+    }
+
+    .day-more {
+      font-size: 0.62rem;
+      color: var(--text-muted);
+      padding-left: 2px;
+    }
+
+    .selected-day-panel {
+      border-top: 1px solid var(--border);
+      padding: 1rem 1.25rem 1.25rem;
+    }
+
+    .selected-day-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+
+    .selected-day-list {
+      list-style: none;
+    }
+
+    .selected-day-list .task-item {
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    .selected-day-list .task-item:first-child {
+      padding-top: 0;
+    }
+
+    @media (max-width: 540px) {
+      .calendar-day {
+        min-height: 58px;
+      }
+
+      .day-task {
+        display: none;
+      }
+
+      .calendar-day.has-tasks .day-number::after {
+        content: "";
+        display: inline-block;
+        width: 5px;
+        height: 5px;
+        background: var(--primary);
+        border-radius: 50%;
+        margin-left: 3px;
+        vertical-align: middle;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="app">
     <header>
       <h1>Task Manager</h1>
-      <p>Stay organized, one task at a time</p>
+      <p>Schedule tasks and view them on the calendar</p>
     </header>
 
-    <div class="card">
-      <form class="add-form" id="addForm">
-        <input
-          type="text"
-          id="taskInput"
-          placeholder="What needs to be done?"
-          autocomplete="off"
-          maxlength="200"
-        >
-        <button type="submit">Add</button>
-      </form>
+    <div class="view-toggle">
+      <button class="view-btn active" data-view="list">List</button>
+      <button class="view-btn" data-view="calendar">Calendar</button>
+    </div>
 
-      <div class="filters">
-        <button class="filter-btn active" data-filter="all">All</button>
-        <button class="filter-btn" data-filter="active">Active</button>
-        <button class="filter-btn" data-filter="completed">Done</button>
+    <div class="panel active" id="listPanel">
+      <div class="card">
+        <form class="add-form" id="addForm">
+          <div class="add-form-row">
+            <input
+              type="text"
+              id="taskInput"
+              placeholder="What needs to be done?"
+              autocomplete="off"
+              maxlength="200"
+            >
+          </div>
+          <div class="add-form-row">
+            <div style="flex: 1;">
+              <label class="date-label" for="taskDate">Due date</label>
+              <input type="date" id="taskDate" required>
+            </div>
+            <button type="submit" style="align-self: flex-end;">Add</button>
+          </div>
+        </form>
+
+        <div class="filters">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="active">Active</button>
+          <button class="filter-btn" data-filter="completed">Done</button>
+        </div>
+
+        <ul class="task-list" id="taskList"></ul>
+
+        <div class="footer">
+          <span id="taskCount">0 tasks</span>
+          <button class="clear-btn" id="clearCompleted" disabled>Clear completed</button>
+        </div>
       </div>
+    </div>
 
-      <ul class="task-list" id="taskList"></ul>
-
-      <div class="footer">
-        <span id="taskCount">0 tasks</span>
-        <button class="clear-btn" id="clearCompleted" disabled>Clear completed</button>
+    <div class="panel" id="calendarPanel">
+      <div class="card">
+        <div class="calendar-header">
+          <button class="nav-btn" id="prevMonth" aria-label="Previous month">&lsaquo;</button>
+          <span class="calendar-title" id="calendarTitle"></span>
+          <button class="nav-btn" id="nextMonth" aria-label="Next month">&rsaquo;</button>
+        </div>
+        <div class="calendar-grid" id="calendarGrid"></div>
+        <div class="selected-day-panel">
+          <h3 class="selected-day-title" id="selectedDayTitle"></h3>
+          <ul class="selected-day-list" id="selectedDayList"></ul>
+        </div>
       </div>
     </div>
   </div>
 
   <script>
     const STORAGE_KEY = "task-manager-tasks";
+    const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const MONTHS = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
 
     let tasks = loadTasks();
     let filter = "all";
+    let currentView = "list";
+    let calendarMonth = new Date().getMonth();
+    let calendarYear = new Date().getFullYear();
+    let selectedDate = toDateKey(new Date());
 
     const addForm = document.getElementById("addForm");
     const taskInput = document.getElementById("taskInput");
+    const taskDate = document.getElementById("taskDate");
     const taskList = document.getElementById("taskList");
     const taskCount = document.getElementById("taskCount");
     const clearCompletedBtn = document.getElementById("clearCompleted");
     const filterBtns = document.querySelectorAll(".filter-btn");
+    const viewBtns = document.querySelectorAll(".view-btn");
+    const listPanel = document.getElementById("listPanel");
+    const calendarPanel = document.getElementById("calendarPanel");
+    const calendarTitle = document.getElementById("calendarTitle");
+    const calendarGrid = document.getElementById("calendarGrid");
+    const selectedDayTitle = document.getElementById("selectedDayTitle");
+    const selectedDayList = document.getElementById("selectedDayList");
+    const prevMonthBtn = document.getElementById("prevMonth");
+    const nextMonthBtn = document.getElementById("nextMonth");
+
+    taskDate.value = toDateKey(new Date());
+
+    function toDateKey(date) {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, "0");
+      const d = String(date.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    }
+
+    function parseDateKey(key) {
+      const [y, m, d] = key.split("-").map(Number);
+      return new Date(y, m - 1, d);
+    }
+
+    function formatDisplayDate(key) {
+      const date = parseDateKey(key);
+      const today = toDateKey(new Date());
+      const tomorrow = toDateKey(new Date(Date.now() + 86400000));
+      if (key === today) return "Today";
+      if (key === tomorrow) return "Tomorrow";
+      return date.toLocaleDateString(undefined, {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+        year: "numeric"
+      });
+    }
 
     function loadTasks() {
       try {
         const stored = localStorage.getItem(STORAGE_KEY);
-        return stored ? JSON.parse(stored) : [];
+        const parsed = stored ? JSON.parse(stored) : [];
+        return parsed.map(task => ({
+          ...task,
+          date: task.date || toDateKey(new Date(task.createdAt || Date.now()))
+        }));
       } catch {
         return [];
       }
@@ -297,13 +618,14 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
     }
 
-    function addTask(text) {
+    function addTask(text, date) {
       const trimmed = text.trim();
-      if (!trimmed) return;
+      if (!trimmed || !date) return;
 
       tasks.unshift({
         id: crypto.randomUUID(),
         text: trimmed,
+        date,
         completed: false,
         createdAt: Date.now()
       });
@@ -333,6 +655,10 @@
       render();
     }
 
+    function getTasksForDate(dateKey) {
+      return tasks.filter(t => t.date === dateKey);
+    }
+
     function getFilteredTasks() {
       switch (filter) {
         case "active": return tasks.filter(t => !t.completed);
@@ -341,7 +667,25 @@
       }
     }
 
-    function render() {
+    function renderTaskItem(task) {
+      return `
+        <li class="task-item${task.completed ? " completed" : ""}" data-id="${task.id}">
+          <input
+            type="checkbox"
+            class="task-checkbox"
+            ${task.completed ? "checked" : ""}
+            aria-label="Mark task as ${task.completed ? "incomplete" : "complete"}"
+          >
+          <div class="task-body">
+            <span class="task-text">${escapeHtml(task.text)}</span>
+            <div class="task-date">${formatDisplayDate(task.date)}</div>
+          </div>
+          <button class="delete-btn" aria-label="Delete task">&times;</button>
+        </li>
+      `;
+    }
+
+    function renderList() {
       const filtered = getFilteredTasks();
       const activeCount = tasks.filter(t => !t.completed).length;
       const completedCount = tasks.filter(t => t.completed).length;
@@ -354,23 +698,72 @@
         };
         taskList.innerHTML = `<li class="empty-state">${messages[filter]}</li>`;
       } else {
-        taskList.innerHTML = filtered.map(task => `
-          <li class="task-item${task.completed ? " completed" : ""}" data-id="${task.id}">
-            <input
-              type="checkbox"
-              class="task-checkbox"
-              ${task.completed ? "checked" : ""}
-              aria-label="Mark task as ${task.completed ? "incomplete" : "complete"}"
-            >
-            <span class="task-text">${escapeHtml(task.text)}</span>
-            <button class="delete-btn" aria-label="Delete task">&times;</button>
-          </li>
-        `).join("");
+        taskList.innerHTML = filtered.map(renderTaskItem).join("");
       }
 
-      const countLabel = activeCount === 1 ? "1 task left" : `${activeCount} tasks left`;
-      taskCount.textContent = countLabel;
+      taskCount.textContent = activeCount === 1 ? "1 task left" : `${activeCount} tasks left`;
       clearCompletedBtn.disabled = completedCount === 0;
+    }
+
+    function renderCalendar() {
+      calendarTitle.textContent = `${MONTHS[calendarMonth]} ${calendarYear}`;
+
+      const firstDay = new Date(calendarYear, calendarMonth, 1);
+      const startOffset = firstDay.getDay();
+      const daysInMonth = new Date(calendarYear, calendarMonth + 1, 0).getDate();
+      const todayKey = toDateKey(new Date());
+
+      let html = WEEKDAYS.map(day => `<div class="weekday">${day}</div>`).join("");
+
+      for (let i = 0; i < startOffset; i++) {
+        html += `<div class="calendar-day empty"></div>`;
+      }
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dateKey = toDateKey(new Date(calendarYear, calendarMonth, day));
+        const dayTasks = getTasksForDate(dateKey);
+        const isToday = dateKey === todayKey;
+        const isSelected = dateKey === selectedDate;
+        const hasTasks = dayTasks.length > 0;
+
+        const visibleTasks = dayTasks.slice(0, 2);
+        const hiddenCount = dayTasks.length - visibleTasks.length;
+
+        const taskHtml = visibleTasks.map(t =>
+          `<span class="day-task${t.completed ? " completed" : ""}">${escapeHtml(t.text)}</span>`
+        ).join("") + (hiddenCount > 0 ? `<span class="day-more">+${hiddenCount} more</span>` : "");
+
+        html += `
+          <div
+            class="calendar-day${isToday ? " today" : ""}${isSelected ? " selected" : ""}${hasTasks ? " has-tasks" : ""}"
+            data-date="${dateKey}"
+          >
+            <span class="day-number">${day}</span>
+            <div class="day-tasks">${taskHtml}</div>
+          </div>
+        `;
+      }
+
+      calendarGrid.innerHTML = html;
+      renderSelectedDay();
+    }
+
+    function renderSelectedDay() {
+      const dayTasks = getTasksForDate(selectedDate);
+      selectedDayTitle.textContent = formatDisplayDate(selectedDate);
+
+      if (dayTasks.length === 0) {
+        selectedDayList.innerHTML = `<li class="empty-state">No tasks scheduled for this day.</li>`;
+      } else {
+        selectedDayList.innerHTML = dayTasks.map(renderTaskItem).join("");
+      }
+    }
+
+    function render() {
+      renderList();
+      if (currentView === "calendar") {
+        renderCalendar();
+      }
     }
 
     function escapeHtml(text) {
@@ -379,14 +772,7 @@
       return div.innerHTML;
     }
 
-    addForm.addEventListener("submit", e => {
-      e.preventDefault();
-      addTask(taskInput.value);
-      taskInput.value = "";
-      taskInput.focus();
-    });
-
-    taskList.addEventListener("click", e => {
+    function handleTaskListClick(e, container) {
       const item = e.target.closest(".task-item");
       if (!item) return;
 
@@ -397,15 +783,66 @@
       } else if (e.target.classList.contains("delete-btn")) {
         deleteTask(id);
       }
+    }
+
+    addForm.addEventListener("submit", e => {
+      e.preventDefault();
+      addTask(taskInput.value, taskDate.value);
+      taskInput.value = "";
+      taskDate.value = selectedDate || toDateKey(new Date());
+      taskInput.focus();
     });
+
+    taskList.addEventListener("click", e => handleTaskListClick(e, taskList));
+    selectedDayList.addEventListener("click", e => handleTaskListClick(e, selectedDayList));
 
     filterBtns.forEach(btn => {
       btn.addEventListener("click", () => {
         filterBtns.forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
         filter = btn.dataset.filter;
-        render();
+        renderList();
       });
+    });
+
+    viewBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        viewBtns.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        currentView = btn.dataset.view;
+        listPanel.classList.toggle("active", currentView === "list");
+        calendarPanel.classList.toggle("active", currentView === "calendar");
+        if (currentView === "calendar") {
+          renderCalendar();
+        }
+      });
+    });
+
+    calendarGrid.addEventListener("click", e => {
+      const dayEl = e.target.closest(".calendar-day:not(.empty)");
+      if (!dayEl) return;
+
+      selectedDate = dayEl.dataset.date;
+      taskDate.value = selectedDate;
+      renderCalendar();
+    });
+
+    prevMonthBtn.addEventListener("click", () => {
+      calendarMonth--;
+      if (calendarMonth < 0) {
+        calendarMonth = 11;
+        calendarYear--;
+      }
+      renderCalendar();
+    });
+
+    nextMonthBtn.addEventListener("click", () => {
+      calendarMonth++;
+      if (calendarMonth > 11) {
+        calendarMonth = 0;
+        calendarYear++;
+      }
+      renderCalendar();
     });
 
     clearCompletedBtn.addEventListener("click", clearCompleted);
